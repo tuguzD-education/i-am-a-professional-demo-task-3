@@ -1,0 +1,246 @@
+openapi: "3.0.3"
+info:
+  title: "Demo_Task_3 API"
+  description: "Demo_Task_3 API"
+  version: "1.0.0"
+servers:
+- url: "https://Demo_Task_3"
+paths:
+  /promo:
+    get:
+      description: "Получение краткой информации (без информации об <br> участника\
+        х и призах) обо всех промоакциях."
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/GetPromoAction"
+    post:
+      description: "Добавление промоакции с возможностью указания названия (name),\
+        \ описания (description). <br> Описание – не обязательный параметр, назван\
+        ие – обязательный."
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "integer"
+                format: "int64"
+  /promo/{promoId}:
+    delete:
+      description: "Удаление промоакции по идентификатору"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: "Получение полной информации (с информацией об <br> участниках\
+        \ и призах) о промоакции по идентификатору."
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromoAction"
+    put:
+      description: "Редактирование промоакции по идентификатору промоакции. <br> Р\
+        едактировать можно только свойства name, description. <br> Удалить имя так\
+        им образом нельзя, описание – можно."
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /promo/{promoId}/participant:
+    post:
+      description: "Добавление участника в промоакцию по идентификатору промоакции\
+        ."
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "integer"
+                format: "int64"
+  /promo/{promoId}/participant/{participantId}:
+    delete:
+      description: "Удаление участника из промоакции по идентификаторам промоакции\
+        \ и участника"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - name: "participantId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /promo/{promoId}/prize:
+    post:
+      description: "Добавление приза в промоакцию по идентификатору промоакции"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "integer"
+                format: "int64"
+  /promo/{promoId}/prize/{prizeId}:
+    delete:
+      description: "Удаление приза из промоакции по идентификаторам промоакции и п\
+        риза"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - name: "prizeId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /promo/{promoId}/raffle:
+    post:
+      description: "Проведение розыгрыша призов в промоакции по идентификатору про\
+        моакции, <br> которое возможно только в том случае, когда <br> количество\
+        \ участников и призов в промоакции совпадает."
+      parameters:
+      - name: "promoId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/RaffleResult"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    GetPromoAction:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        description:
+          type: "string"
+    Prize:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        description:
+          type: "string"
+    Participant:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+    PromoAction:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        description:
+          type: "string"
+        prizes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Prize"
+        participants:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Participant"
+    RaffleResult:
+      type: "object"
+      properties:
+        winner:
+          $ref: "#/components/schemas/Participant"
+        prize:
+          $ref: "#/components/schemas/Prize"
